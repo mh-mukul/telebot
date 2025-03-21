@@ -1,0 +1,21 @@
+services:
+  # FastAPI app service
+  telebot:
+    build: .
+    container_name: telebot_backend
+    image: telebot_backend
+    restart: always
+    ports:
+      - "${DOCKER_PORT:-8001}:8001"
+    environment:
+      - TZ=Asia/Dhaka
+    volumes:
+      - ${LOG_DIR}:/app/${LOG_DIR}
+      - ./:/app
+    networks:
+      - custom-network
+    command: supervisor -c /app/supervisor.conf
+
+networks:
+  custom-network:
+    driver: bridge
