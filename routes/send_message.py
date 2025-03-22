@@ -14,7 +14,7 @@ router = APIRouter()
 response = ResponseHelper()
 
 
-class MessageData(BaseModel):
+class GroupMessageBody(BaseModel):
     api_token: str = Field(...,)
     group_id: str = Field(...,)
     thread_id: str = Field(None,)
@@ -25,7 +25,7 @@ class MessageData(BaseModel):
 
 @router.post("/send-message-group")
 @api_key_required
-async def send_message_group(request: Request, data: MessageData, db: Session = Depends(get_db)):
+async def send_message_group(request: Request, data: GroupMessageBody, db: Session = Depends(get_db)):
     task = send_message_to_group.apply_async(
         args=(data.api_token, data.group_id,
               data.thread_id, data.message, data.image_url, data.file_path)
@@ -33,8 +33,8 @@ async def send_message_group(request: Request, data: MessageData, db: Session = 
     return response.success_response(200, "success", data={"task_id": task.id})
 
 
-class PrivateMessageData(BaseModel):
-    phone: str = Field(...,)
+class PrivateMessageBody(BaseModel):
+    mobile: str = Field(...,)
     message: str = Field(...,)
     image_url: str = Field(None,)
     file_path: str = Field(None,)
@@ -42,15 +42,15 @@ class PrivateMessageData(BaseModel):
 
 @router.post("/send-message-private")
 @api_key_required
-async def handle_send_message(request: Request, data: PrivateMessageData, db: Session = Depends(get_db)):
+async def send_message_private(request: Request, data: PrivateMessageBody, db: Session = Depends(get_db)):
     db_user = db.query(TelegramUser).filter(
-        TelegramUser.phone == data.phone).first()
+        TelegramUser.mobile == data.mobile).first()
     if not db_user:
         logger.error(
-            f"User not found with: {data.phone}")
+            f"User not found with: {data.mobile}")
         return response.error_response(404, "User not found")
 
     task = send_message_to_private.apply_async(
-        args=(db_user.user_id, data.message, data.image_url, data.file_path)
+        args=(db_user.chat_id, data.message, data.image_url, data.file_path)
     )
     return response.success_response(200, "success", data={"task_id": task.id})

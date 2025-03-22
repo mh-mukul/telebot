@@ -8,9 +8,11 @@ class TelegramUser(Base):
     __tablename__ = 'telegram_users'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(100), nullable=True)
-    phone = Column(String(15), nullable=False, unique=True)
-    user_id = Column(String(100), nullable=False, unique=True)
+    first_name = Column(String(100), nullable=True)
+    last_name = Column(String(100), nullable=True)
+    username = Column(String(100), nullable=True)
+    mobile = Column(String(15), nullable=False, unique=True)
+    chat_id = Column(String(100), nullable=False, unique=True)
     is_active = Column(Boolean(), nullable=False, default=True)
     is_deleted = Column(Boolean(), nullable=False, default=False)
     is_superuser = Column(Boolean(), nullable=False, default=False)
@@ -23,4 +25,4 @@ class TelegramUser(Base):
         self.updated_at = datetime.now()
 
     def __repr__(self):
-        return f"{self.phone}"
+        return f"{self.mobile}"

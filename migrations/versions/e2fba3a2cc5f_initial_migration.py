@@ -1,8 +1,8 @@
 """Initial migration
 
-Revision ID: 0da8d593c30b
+Revision ID: e2fba3a2cc5f
 Revises: 
-Create Date: 2025-03-21 23:49:12.719228
+Create Date: 2025-03-22 22:13:35.513401
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '0da8d593c30b'
+revision: str = 'e2fba3a2cc5f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -31,17 +31,19 @@ def upgrade() -> None:
     )
     op.create_table('telegram_users',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('name', sa.String(length=100), nullable=True),
-    sa.Column('phone', sa.String(length=15), nullable=False),
-    sa.Column('user_id', sa.String(length=100), nullable=False),
+    sa.Column('first_name', sa.String(length=100), nullable=True),
+    sa.Column('last_name', sa.String(length=100), nullable=True),
+    sa.Column('username', sa.String(length=100), nullable=True),
+    sa.Column('mobile', sa.String(length=15), nullable=False),
+    sa.Column('chat_id', sa.String(length=100), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
     sa.Column('is_deleted', sa.Boolean(), nullable=False),
     sa.Column('is_superuser', sa.Boolean(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=6), nullable=True),
     sa.Column('updated_at', sa.DateTime(timezone=6), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('phone'),
-    sa.UniqueConstraint('user_id')
+    sa.UniqueConstraint('chat_id'),
+    sa.UniqueConstraint('mobile')
     )
     # ### end Alembic commands ###
 

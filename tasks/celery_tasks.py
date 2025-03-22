@@ -37,9 +37,14 @@ async def async_send_message_to_private(api_token, user_id, message, image_url, 
 # Celery Task
 @celery_app.task
 def send_message_to_private(user_id, message, image_url, file_path):
-    loop = asyncio.get_event_loop()
-    result = loop.run_until_complete(
-        async_send_message_to_private(BOT_TOKEN, user_id, message, image_url, file_path))
+    try:
+        loop = asyncio.get_event_loop()
+        result = loop.run_until_complete(async_send_message_to_private(
+            BOT_TOKEN, user_id, message, image_url, file_path))
+    except Exception as e:
+        print(f"Failed to send message: {traceback.format_exc()}")
+        result = {"status": "error", "message": f"Task failed: {e}"}
+
     return result
 
 

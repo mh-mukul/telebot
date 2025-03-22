@@ -11,6 +11,7 @@ class ApiKey(Base):
     key = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     is_deleted = Column(Boolean, default=False)
+    valid_until = Column(DateTime(6), nullable=True)
     created_at = Column(DateTime(6), default=datetime.now)
     updated_at = Column(DateTime(6), default=datetime.now)
 

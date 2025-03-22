@@ -1,9 +1,21 @@
 services:
+  # Redis service
+  redis:
+    image: redis:latest
+    container_name: telebot_redis
+    restart: always
+    networks:
+      - custom-network
+    security_opt:
+      - seccomp:unconfined # Allow Redis to initialize background jobs
+    cap_add:
+      - SYS_NICE          # Grant Redis additional privileges if needed
+    command: ["redis-server", "--protected-mode", "no"] # Disable protected mode
   # FastAPI app service
   telebot:
     build: .
-    container_name: telebot_backend
     image: telebot_backend
+    container_name: telebot_backend
     restart: always
     ports:
       - "${DOCKER_PORT:-8001}:8001"
@@ -14,7 +26,8 @@ services:
       - ./:/app
     networks:
       - custom-network
-    command: supervisor -c /app/supervisor.conf
+    depends_on:
+      - redis
 
 networks:
   custom-network:

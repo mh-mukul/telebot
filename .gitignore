@@ -50,8 +50,9 @@ Thumbs.db
 
 .env
 venv/
+env/
 __pycache__/
 celerybeat-schedule.db
-artifacts/
 logs/
 *.db
+supervisord.pid
