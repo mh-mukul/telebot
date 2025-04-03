@@ -16,4 +16,6 @@ echo "Entrypoint script finished. Starting application..."
 
 echo "Starting supervisord..."
 
+mkdir -p /app/logs /app/logs/console /app/logs/celery
+
 /usr/bin/supervisord -c /app/supervisord.conf
