@@ -12,5 +12,3 @@ class ResponseHelper:
             "message": message,
             "data": data
         })
-
-    
