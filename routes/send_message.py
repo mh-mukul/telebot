@@ -4,6 +4,7 @@ from fastapi import APIRouter, Request, Depends
 
 from config.logger import logger
 from config.database import get_db
+from config.rate_limiter import limiter
 from utils.helper import ResponseHelper
 from decorators.auth import api_key_required
 from tasks import send_message_to_group, send_message_to_private
@@ -24,6 +25,7 @@ class GroupMessageBody(BaseModel):
 
 
 @router.post("/send-message-group")
+@limiter.limit("20/minute")
 @api_key_required
 async def send_message_group(request: Request, data: GroupMessageBody, db: Session = Depends(get_db)):
     task = send_message_to_group.apply_async(
@@ -43,6 +45,7 @@ class PrivateMessageBody(BaseModel):
 
 
 @router.post("/send-message-private")
+@limiter.limit("20/minute")
 @api_key_required
 async def send_message_private(request: Request, data: PrivateMessageBody, db: Session = Depends(get_db)):
     if not data.chat_id and not data.mobile:

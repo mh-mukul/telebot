@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from slowapi.errors import RateLimitExceeded
 from fastapi.exceptions import RequestValidationError
 
 from handlers.custom_exceptions import APIKeyException
@@ -18,7 +19,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
     # Custom error response
     return JSONResponse(
-        status_code=200,
+        status_code=400,
         content={
             "status": 400,
             "message": error_message,
@@ -30,7 +31,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     return JSONResponse(
-        status_code=200,
+        status_code=500,
         content={
             "status": 500,
             "message": "Something went wrong!",
@@ -42,10 +43,22 @@ async def general_exception_handler(request: Request, exc: Exception):
 @app.exception_handler(APIKeyException)
 async def api_key_exception_handler(request: Request, exc: APIKeyException):
     return JSONResponse(
-        status_code=200,
+        status_code=401,
         content={
-            "status": 400,
+            "status": 401,
             "message": exc.message,
+            "data": {}
+        }
+    )
+
+
+@app.exception_handler(RateLimitExceeded)
+async def ratelimit_exceeded_handler(request: Request, exc: RateLimitExceeded):
+    return JSONResponse(
+        status_code=429,
+        content={
+            "status": 429,
+            "message": "Too many requests, slow down!",
             "data": {}
         }
     )
