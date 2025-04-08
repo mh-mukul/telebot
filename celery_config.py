@@ -3,14 +3,17 @@ from celery import Celery
 from dotenv import load_dotenv
 
 load_dotenv()
-CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND')
+
+REDIS_HOST=os.environ.get("REDIS_HOST", "localhost")
+REDIS_PORT=int(os.environ.get("REDIS_PORT", 6379))
+REDIS_CELERY_BROKER_DB=int(os.environ.get("REDIS_CELERY_BROKER_DB", 0))
+REDIS_CELERY_BACKEND_DB=int(os.environ.get("REDIS_CELERY_BACKEND_DB", 0))
 
 
 celery_app = Celery(
     "telebot",
-    broker=CELERY_BROKER_URL,  # Redis broker URL
-    backend=CELERY_RESULT_BACKEND,  # Redis backend URL (optional)
+    broker=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_BROKER_DB}",  # Redis broker URL
+    backend=f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_CELERY_BACKEND_DB}",  # Redis backend URL (optional)
     broker_connection_retry_on_startup=True,
 )
 

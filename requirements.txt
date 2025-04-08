@@ -9,6 +9,5 @@ python-dotenv
 python-telegram-bot
 redis
 requests
-slowapi
 SQLAlchemy
 uvicorn
